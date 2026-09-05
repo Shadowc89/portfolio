@@ -39,6 +39,11 @@ const validCredentials = (email, password) =>
   password.length >= 8 &&
   password.length <= 128;
 
+// مسار تجريبي للاختبار عند فتح الرابط الرئيسي
+app.get("/", (req, res) => {
+  res.send("🚀 Server is up and running successfully on Vercel!");
+});
+
 // 1. مسار إنشاء حساب جديد (Register)
 app.post("/api/auth/register", async (req, res, next) => {
   const { email, password } = req.body || {};
