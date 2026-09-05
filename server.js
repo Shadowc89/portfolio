@@ -1,6 +1,7 @@
 const path = require("path");
+const fs = require("fs");
 const express = require("express");
-const cors = require("cors"); // 1. استدعاء مكتبة cors
+const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const sqlite3 = require("sqlite3").verbose();
@@ -9,10 +10,14 @@ const app = express();
 const port = Number(process.env.PORT) || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || "super_secret_key_change_me_in_production";
 
-const dbPath = path.join(__dirname, "portfolio.sqlite");
+// اختيار مسار قابل للكتابة في بيئة Serverless (Vercel)
+const isVercel = process.env.VERCEL || process.env.NOW_BUILDER;
+const dbDir = isVercel ? "/tmp" : __dirname;
+const dbPath = path.join(dbDir, "portfolio.sqlite");
+
 const db = new sqlite3.Database(dbPath);
 
-// إنشاء الجدول
+// إنشاء الجدول عند بدء التشغيل
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,9 +28,8 @@ db.serialize(() => {
 });
 
 // الوسائط (Middleware)
-app.use(cors()); // 2. تفعيل CORS لجميع الطلبات القادمة من الفرونت إند
+app.use(cors());
 app.use(express.json({ limit: "10kb" }));
-app.use(express.static(__dirname));
 
 // التحقق من المدخلات
 const validCredentials = (email, password) =>
@@ -106,4 +110,9 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: "حدث خطأ في الخادم." });
 });
 
-app.listen(port, () => console.log(`Portfolio server running at http://localhost:${port}`));
+// تشغيل السيرفر محلياً أو تصديره لـ Vercel
+if (!isVercel) {
+  app.listen(port, () => console.log(`Portfolio server running at http://localhost:${port}`));
+}
+
+module.exports = app;
