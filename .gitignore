@@ -1,0 +1,4 @@
+node_modules/
+portfolio.sqlite
+portfolio.sqlite-shm
+portfolio.sqlite-wal
