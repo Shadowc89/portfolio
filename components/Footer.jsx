@@ -13,8 +13,8 @@ function Footer() {
     setStatus("");
 
     try {
-      // توجيه الطلب مباشرة إلى سيرفر الباك إند
-      const response = await fetch(`http://localhost:5000/api/auth/${mode}`, {
+      // ✅ تم التعديل هنا: استخدام مسار نسبي بدلاً من localhost
+      const response = await fetch(`/api/auth/${mode}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
